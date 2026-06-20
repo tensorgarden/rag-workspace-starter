@@ -78,4 +78,51 @@ describe("ingestion", () => {
   it("stale count is non-zero to surface freshness risk", () => {
     expect(demoSnapshot.ingestionStatus.staleDocumentCount).toBeGreaterThan(0);
   });
+
+  it("tracks documents whose source changed after ingestion", () => {
+    const status = demoSnapshot.ingestionStatus;
+    expect(status.sourceModifiedAfterIngestionCount).toBeGreaterThanOrEqual(0);
+    expect(status.sourceModifiedAfterIngestionCount).toBeLessThanOrEqual(status.totalDocuments);
+  });
+});
+
+describe("document freshness", () => {
+  it("at least one document has source modified after ingestion date", () => {
+    const outOfSync = demoDocuments.filter(
+      d => d.lastModifiedAt != null && d.lastModifiedAt > d.ingestedAt
+    );
+    expect(outOfSync.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("documents ingested after source modification stay in sync", () => {
+    const inSync = demoDocuments.filter(
+      d => d.lastModifiedAt != null && d.lastModifiedAt <= d.ingestedAt
+    );
+    expect(inSync.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("documents without lastModifiedAt are handled gracefully", () => {
+    const noModTime = demoDocuments.filter(d => d.lastModifiedAt == null);
+    expect(noModTime.length).toBeGreaterThanOrEqual(1);
+    for (const doc of noModTime) {
+      expect(doc.ingestedAt).toBeTruthy();
+      expect(doc.parseQuality).toBeGreaterThan(0);
+    }
+  });
+
+  it("source-modified count matches out-of-sync documents", () => {
+    const outOfSync = demoDocuments.filter(
+      d => d.lastModifiedAt != null && d.lastModifiedAt > d.ingestedAt
+    );
+    expect(outOfSync.length).toEqual(demoSnapshot.ingestionStatus.sourceModifiedAfterIngestionCount);
+  });
+
+  it("out-of-sync document still has parse quality recorded", () => {
+    const outOfSync = demoDocuments.find(
+      d => d.lastModifiedAt != null && d.lastModifiedAt > d.ingestedAt
+    );
+    expect(outOfSync).toBeDefined();
+    expect(outOfSync!.parseQuality).toBeGreaterThan(0);
+    expect(outOfSync!.chunksCreated).toBeGreaterThan(0);
+  });
 });

@@ -11,10 +11,10 @@ export const demoMembers: WorkspaceMember[] = [
 ];
 
 export const demoDocuments: Document[] = [
-  { id: "doc_001", workspaceId: "ws_legal", name: "Q2 2026 Compliance Audit Report.pdf", type: "PDF", size: "4.2 MB", parser: "docling-v2", parseQuality: 92, chunksCreated: 87, ingestedAt: "2026-06-07T09:30:00Z", status: "ready" },
-  { id: "doc_002", workspaceId: "ws_legal", name: "Data Processing Agreement — Vendor X.docx", type: "DOCX", size: "1.1 MB", parser: "mistral-ocr", parseQuality: 85, chunksCreated: 34, ingestedAt: "2026-06-07T10:15:00Z", status: "ready" },
-  { id: "doc_003", workspaceId: "ws_legal", name: "ISO 27001:2022 Certification Scope.pdf", type: "PDF", size: "2.8 MB", parser: "docling-v2", parseQuality: 78, chunksCreated: 52, ingestedAt: "2026-06-07T11:00:00Z", status: "ready" },
-  { id: "doc_004", workspaceId: "ws_legal", name: "Employee Handbook v3.1.pdf", type: "PDF", size: "6.5 MB", parser: "mistral-ocr", parseQuality: 96, chunksCreated: 203, ingestedAt: "2026-06-06T14:00:00Z", status: "ready" },
+  { id: "doc_001", workspaceId: "ws_legal", name: "Q2 2026 Compliance Audit Report.pdf", type: "PDF", size: "4.2 MB", parser: "docling-v2", parseQuality: 92, chunksCreated: 87, ingestedAt: "2026-06-07T09:30:00Z", lastModifiedAt: "2026-06-01T00:00:00Z", status: "ready" },
+  { id: "doc_002", workspaceId: "ws_legal", name: "Data Processing Agreement — Vendor X.docx", type: "DOCX", size: "1.1 MB", parser: "mistral-ocr", parseQuality: 85, chunksCreated: 34, ingestedAt: "2026-06-07T10:15:00Z", lastModifiedAt: "2026-05-28T00:00:00Z", status: "ready" },
+  { id: "doc_003", workspaceId: "ws_legal", name: "ISO 27001:2022 Certification Scope.pdf", type: "PDF", size: "2.8 MB", parser: "docling-v2", parseQuality: 78, chunksCreated: 52, ingestedAt: "2026-06-07T11:00:00Z", lastModifiedAt: "2026-06-15T09:00:00Z", status: "ready" },
+  { id: "doc_004", workspaceId: "ws_legal", name: "Employee Handbook v3.1.pdf", type: "PDF", size: "6.5 MB", parser: "mistral-ocr", parseQuality: 96, chunksCreated: 203, ingestedAt: "2026-06-06T14:00:00Z", lastModifiedAt: "2026-05-15T00:00:00Z", status: "ready" },
   { id: "doc_005", workspaceId: "ws_legal", name: "Vendor Risk Assessment Matrix.xlsx", type: "XLSX", size: "0.8 MB", parser: "docling-v2", parseQuality: 42, chunksCreated: 28, ingestedAt: "2026-06-07T08:45:00Z", status: "error" }
 ];
 
@@ -53,7 +53,8 @@ export const demoSearchHistory: SearchHistoryEntry[] = [
 export const demoIngestionStatus: IngestionStatus = {
   workspaceId: "ws_legal", totalDocuments: 47, totalChunks: 1423,
   avgParseQuality: 79, lastIngestedAt: "2026-06-07T11:00:00Z",
-  staleThresholdDays: 90, staleDocumentCount: 3
+  staleThresholdDays: 90, staleDocumentCount: 3,
+  sourceModifiedAfterIngestionCount: 1
 };
 
 export const demoSnapshot: RagSnapshot = {

@@ -10,7 +10,11 @@ export interface Workspace {
 
 export interface Document {
   id: string; workspaceId: string; name: string; type: string; size: string; parser: string;
-  parseQuality: number; chunksCreated: number; ingestedAt: string; status: "ready" | "parsing" | "error";
+  parseQuality: number; chunksCreated: number; ingestedAt: string;
+  /** ISO timestamp of the source file's last modification — distinct from ingestedAt. When
+   *  lastModifiedAt > ingestedAt the source changed after ingestion and embeddings are stale. */
+  lastModifiedAt?: string;
+  status: "ready" | "parsing" | "error";
 }
 
 export interface Chunk {
@@ -41,6 +45,8 @@ export interface IngestionStatus {
   workspaceId: string; totalDocuments: number; totalChunks: number;
   avgParseQuality: number; lastIngestedAt: string;
   staleThresholdDays: number; staleDocumentCount: number;
+  /** Documents whose source was modified after the last ingestion — embeddings are definitely stale. */
+  sourceModifiedAfterIngestionCount: number;
 }
 
 export interface ParserResult {

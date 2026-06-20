@@ -189,6 +189,13 @@ export default function Home() {
               </div>
             ))}
           </div>
+          {demoIngestionStatus.sourceModifiedAfterIngestionCount > 0 && (
+            <div className="mt-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3">
+              <p className="text-xs font-semibold text-amber-800">
+                ⚠ {demoIngestionStatus.sourceModifiedAfterIngestionCount} document source changed after ingestion — embeddings may be stale
+              </p>
+            </div>
+          )}
           <p className="mt-4 text-xs text-slate-400">Last ingested: {new Date(demoIngestionStatus.lastIngestedAt).toLocaleDateString()}</p>
         </Card>
       </div>
