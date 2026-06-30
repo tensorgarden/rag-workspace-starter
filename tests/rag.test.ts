@@ -42,6 +42,41 @@ describe("search results", () => {
   });
 });
 
+describe("retrieval safety review", () => {
+  it("flags embedded instruction and egress requests before answer use", () => {
+    const unsafeResults = demoSnapshot.searchResults.filter(r => r.safetyReview.status !== "allowed");
+    expect(unsafeResults.length).toBeGreaterThanOrEqual(2);
+
+    const egressRisk = unsafeResults.find(r => r.safetyReview.risk === "egress_request");
+    expect(egressRisk).toBeDefined();
+    expect(egressRisk?.safetyReview.status).toBe("blocked");
+    expect(egressRisk?.safetyReview.externalTarget).toMatch(/vendor-audit/);
+    expect(egressRisk?.safetyReview.reviewNote).toMatch(/external target|block/i);
+  });
+
+  it("keeps blocked retrievals out of generated citations", () => {
+    const blockedResults = demoSnapshot.searchResults.filter(r => r.safetyReview.status === "blocked");
+    const citations = demoSnapshot.answer?.citations ?? [];
+    expect(blockedResults.length).toBeGreaterThan(0);
+
+    for (const result of blockedResults) {
+      expect(citations.some(citation => citation.documentName === result.documentName)).toBe(false);
+    }
+  });
+
+  it("uses only safety-cleared retrievals for direct citations", () => {
+    const directCitations = demoSnapshot.answer?.citations.filter(c => c.coverage === "direct") ?? [];
+    expect(directCitations.length).toBeGreaterThan(0);
+
+    for (const citation of directCitations) {
+      const matchingResult = demoSnapshot.searchResults.find(result =>
+        result.documentName === citation.documentName && result.score >= citation.score - 0.01
+      );
+      expect(matchingResult?.safetyReview.status).toBe("allowed");
+    }
+  });
+});
+
 describe("answer grounding audit", () => {
   it("accounts for cited and unsupported claims", () => {
     const audit = demoSnapshot.answer?.groundingAudit;

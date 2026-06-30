@@ -22,9 +22,20 @@ export interface Chunk {
   semanticBoundary: string; position: number; tokenCount: number;
 }
 
+export type RetrievalSafetyStatus = "allowed" | "review_required" | "blocked";
+export type RetrievalRiskType = "none" | "embedded_instruction" | "egress_request" | "parser_error";
+
+export interface RetrievalSafetyReview {
+  status: RetrievalSafetyStatus;
+  risk: RetrievalRiskType;
+  externalTarget: string | null;
+  reviewNote: string;
+}
+
 export interface SearchResult {
   chunkId: string; documentName: string; chunkText: string; score: number;
   confidence: ConfidenceLevel; method: "vector" | "bm25" | "hybrid";
+  safetyReview: RetrievalSafetyReview;
 }
 
 export type ClaimSupportStatus = "supported" | "needs_citation" | "contradicted";

@@ -38,7 +38,8 @@ function ProgressBar({ value, max, tone = "indigo" }: { value: number; max: numb
 
 export default function Home() {
   const results = demoSnapshot.searchResults;
-  const hasLowConfidence = results.some(r => r.confidence === "low");
+  const lowConfidenceCount = results.filter(r => r.confidence === "low").length;
+  const blockedRetrievals = results.filter(r => r.safetyReview.status === "blocked").length;
   const parserWinner = demoParserResults.reduce((a, b) => a.quality > b.quality ? a : b);
 
   return (
@@ -67,7 +68,8 @@ export default function Home() {
             { label: "Documents", value: demoIngestionStatus.totalDocuments },
             { label: "Total chunks", value: demoIngestionStatus.totalChunks.toLocaleString() },
             { label: "Avg parse quality", value: `${demoIngestionStatus.avgParseQuality}%` },
-            { label: "Low confidence", value: hasLowConfidence ? "1 result" : "None" }
+            { label: "Low confidence", value: lowConfidenceCount > 0 ? `${lowConfidenceCount} results` : "None" },
+            { label: "Safety blocks", value: blockedRetrievals > 0 ? `${blockedRetrievals} chunk` : "None" }
           ].map(s => (
             <div key={s.label} className="rounded-2xl bg-slate-950 p-4 text-white">
               <p className="text-sm text-slate-300">{s.label}</p>
@@ -82,7 +84,7 @@ export default function Home() {
         <Card>
           <h2 className="text-xl font-bold text-slate-950">Hybrid Search Results</h2>
           <p className="mt-1 text-sm leading-6 text-slate-600">
-            Vector (semantic) and BM25 (keyword) results compared. Each result shows which method found it and a confidence score.
+            Vector (semantic) and BM25 (keyword) results compared. Each result shows method, confidence, and retrieval-safety review.
           </p>
           <div className="mt-4 space-y-3">
             {results.map(r => (
@@ -90,6 +92,9 @@ export default function Home() {
                 <div className="flex items-center justify-between gap-2 mb-2">
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-semibold uppercase px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">{r.method.toUpperCase()}</span>
+                    <Badge tone={r.safetyReview.status === "allowed" ? "green" : r.safetyReview.status === "blocked" ? "red" : "amber"}>
+                      {r.safetyReview.status.replace("_", " ")}
+                    </Badge>
                     <span className="text-xs text-slate-400">{r.documentName}</span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -99,7 +104,12 @@ export default function Home() {
                 </div>
                 <p className="text-sm leading-6 text-slate-700">{r.chunkText}</p>
                 {r.confidence === "low" && (
-                  <p className="mt-2 text-xs font-semibold text-red-600">⚠ Parse error — table data could not be extracted. Consider re-ingesting with a different parser.</p>
+                  <p className="mt-2 text-xs font-semibold text-red-600">⚠ Parse error or unsafe retrieved instruction — review before using this chunk.</p>
+                )}
+                {r.safetyReview.status !== "allowed" && (
+                  <p className={`mt-2 text-xs font-semibold ${r.safetyReview.status === "blocked" ? "text-red-600" : "text-amber-700"}`}>
+                    Retrieval safety: {r.safetyReview.reviewNote}{r.safetyReview.externalTarget != null ? ` External target: ${r.safetyReview.externalTarget}.` : ""}
+                  </p>
                 )}
               </div>
             ))}
