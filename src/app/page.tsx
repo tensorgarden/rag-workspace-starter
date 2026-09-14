@@ -212,7 +212,12 @@ export default function Home() {
             <span className="text-xs text-slate-400">Generated {new Date(demoAnswer.generatedAt).toLocaleTimeString()}</span>
           </div>
           {demoAnswer.groundingAudit.reviewRequired && (
-            <div className="mt-3 rounded-2xl border border-amber-200 bg-amber-50 p-3">
+            <div
+              className="mt-3 rounded-2xl border border-amber-200 bg-amber-50 p-3"
+              role="alert"
+              aria-live="assertive"
+              aria-label="Answer release requires human review"
+            >
               <div className="flex flex-wrap items-center gap-2">
                 <Badge tone="amber">Human review required</Badge>
                 <span className="text-xs font-semibold text-amber-800">
@@ -377,7 +382,12 @@ export default function Home() {
             ))}
           </div>
           {demoIngestionStatus.sourceModifiedAfterIngestionCount > 0 && (
-            <div className="mt-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3">
+            <div
+              className="mt-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3"
+              role="alert"
+              aria-live="assertive"
+              aria-label="RAG index drift warning"
+            >
               <p className="text-xs font-semibold text-amber-800">
                 ⚠ {demoIngestionStatus.sourceModifiedAfterIngestionCount} document source changed after ingestion — embeddings may be stale
               </p>
